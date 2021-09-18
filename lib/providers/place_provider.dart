@@ -8,8 +8,8 @@ import 'package:google_maps_place_picker/src/place_picker.dart';
 import 'package:google_maps_webservice/geocoding.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:location/location.dart' as locLoc;
 
 class PlaceProvider extends ChangeNotifier {
   PlaceProvider(
@@ -33,8 +33,7 @@ class PlaceProvider extends ChangeNotifier {
     );
   }
 
-  static PlaceProvider of(BuildContext context, {bool listen = true}) =>
-      Provider.of<PlaceProvider>(context, listen: listen);
+  static PlaceProvider of(BuildContext context, {bool listen = true}) => Provider.of<PlaceProvider>(context, listen: listen);
 
   late GoogleMapsPlaces places;
   late GoogleMapsGeocoding geocoding;
@@ -43,12 +42,25 @@ class PlaceProvider extends ChangeNotifier {
   LocationAccuracy? desiredAccuracy;
   bool isAutoCompleteSearching = false;
 
+  locLoc.Location location = new locLoc.Location();
+  locLoc.PermissionStatus _permissionGranted = locLoc.PermissionStatus.denied;
+  bool isLocationServiceEnabled = false;
+
   Future<void> updateCurrentLocation(bool forceAndroidLocationManager) async {
+    isLocationServiceEnabled = await location.serviceEnabled();
+
+    if (!isLocationServiceEnabled) {
+      isLocationServiceEnabled = await location.requestService();
+      if (!isLocationServiceEnabled) {
+        return;
+      }
+    }
+    _permissionGranted = await location.hasPermission();
+
     try {
-      await Permission.location.request();
-      if (await Permission.location.request().isGranted) {
-        currentPosition = await Geolocator.getCurrentPosition(
-            desiredAccuracy: desiredAccuracy ?? LocationAccuracy.best);
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted == locLoc.PermissionStatus.granted) {
+        currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: desiredAccuracy ?? LocationAccuracy.best);
       } else {
         currentPosition = null;
       }
