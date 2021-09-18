@@ -33,8 +33,7 @@ class AutoCompleteSearch extends StatefulWidget {
       this.initialSearchString,
       this.searchForInitialValue,
       this.autocompleteOnTrailingWhitespace})
-      : assert(searchBarController != null),
-        super(key: key);
+      : super(key: key);
 
   final String? sessionToken;
   final String? hintText;
@@ -121,8 +120,9 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
 
   Widget _buildSearchTextField() {
     return TextField(
+      key: GlobalKey<FormState>(),
       controller: controller,
-      focusNode: focus,
+      //focusNode: focus,
       decoration: InputDecoration(
         hintText: widget.hintText,
         border: InputBorder.none,
@@ -196,7 +196,7 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
   _searchPlace(String searchTerm) {
     this.provider.prevSearchTerm = searchTerm;
 
-    if (context == null) return;
+    //if (context == null) return;
 
     _clearOverlay();
 
@@ -280,7 +280,9 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
       final PlacesAutocompleteResponse response = await provider.places.autocomplete(
         searchTerm,
         sessionToken: widget.sessionToken,
-        location: provider.currentPosition == null ? null : Location(lat: provider.currentPosition!.latitude, lng: provider.currentPosition!.longitude),
+        location: provider.currentPosition == null
+            ? null
+            : Location(lat: provider.currentPosition!.latitude, lng: provider.currentPosition!.longitude),
         offset: widget.autocompleteOffset,
         radius: widget.autocompleteRadius,
         language: widget.autocompleteLanguage,
