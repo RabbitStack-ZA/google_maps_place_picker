@@ -15,6 +15,7 @@ import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 enum PinState { Preparing, Idle, Dragging }
+
 enum SearchingState { Idle, Searching }
 
 class PlacePicker extends StatefulWidget {
@@ -244,7 +245,7 @@ class _PlacePickerState extends State<PlacePicker> {
             children.addAll([
               Icon(
                 Icons.error_outline,
-                color: Theme.of(context).errorColor,
+                color: Theme.of(context).colorScheme.error,
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 16),
