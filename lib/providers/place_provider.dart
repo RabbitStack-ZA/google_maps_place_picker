@@ -9,7 +9,7 @@ import 'package:google_maps_webservice/geocoding.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
-import 'package:location/location.dart' as locLoc;
+// import 'package:location/location.dart' as locLoc;
 
 class PlaceProvider extends ChangeNotifier {
   PlaceProvider(
@@ -42,24 +42,28 @@ class PlaceProvider extends ChangeNotifier {
   LocationAccuracy? desiredAccuracy;
   bool isAutoCompleteSearching = false;
 
-  locLoc.Location location = new locLoc.Location();
-  locLoc.PermissionStatus _permissionGranted = locLoc.PermissionStatus.denied;
+  // locLoc.Location location = new locLoc.Location();
+  // locLoc.PermissionStatus _permissionGranted = locLoc.PermissionStatus.denied;
+  LocationPermission _permissionGranted = LocationPermission.denied;
   bool isLocationServiceEnabled = false;
 
   Future<void> updateCurrentLocation(bool forceAndroidLocationManager) async {
-    isLocationServiceEnabled = await location.serviceEnabled();
+    isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
 
-    if (!isLocationServiceEnabled) {
-      isLocationServiceEnabled = await location.requestService();
-      if (!isLocationServiceEnabled) {
-        return;
-      }
-    }
-    _permissionGranted = await location.hasPermission();
+    // if (!isLocationServiceEnabled) {
+    //   //isLocationServiceEnabled = await location.requestService();
+    //   if (!isLocationServiceEnabled) {
+    //     return;
+    //   }
+    // }
+    //_permissionGranted = await location.hasPermission();
+    _permissionGranted = await Geolocator.checkPermission();
 
     try {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted == locLoc.PermissionStatus.granted) {
+      //_permissionGranted = await location.requestPermission();
+      _permissionGranted = await Geolocator.requestPermission();
+      //if (_permissionGranted == locLoc.PermissionStatus.granted) {
+      if (_permissionGranted == LocationPermission.always || _permissionGranted == LocationPermission.whileInUse) {
         currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: desiredAccuracy ?? LocationAccuracy.best);
       } else {
         currentPosition = null;
