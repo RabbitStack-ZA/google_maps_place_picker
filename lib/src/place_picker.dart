@@ -207,10 +207,9 @@ class _PlacePickerState extends State<PlacePicker> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
+    return PopScope(
+      onPopInvoked: (bool didPop) {
         searchBarController.clearOverlay();
-        return Future.value(true);
       },
       child: FutureBuilder<PlaceProvider>(
         future: _futureProvider,
