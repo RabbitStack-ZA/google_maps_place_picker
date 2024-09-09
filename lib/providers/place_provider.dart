@@ -33,7 +33,8 @@ class PlaceProvider extends ChangeNotifier {
     );
   }
 
-  static PlaceProvider of(BuildContext context, {bool listen = true}) => Provider.of<PlaceProvider>(context, listen: listen);
+  static PlaceProvider of(BuildContext context, {bool listen = true}) =>
+      Provider.of<PlaceProvider>(context, listen: listen);
 
   late GoogleMapsPlaces places;
   late GoogleMapsGeocoding geocoding;
@@ -63,8 +64,12 @@ class PlaceProvider extends ChangeNotifier {
       //_permissionGranted = await location.requestPermission();
       _permissionGranted = await Geolocator.requestPermission();
       //if (_permissionGranted == locLoc.PermissionStatus.granted) {
-      if (_permissionGranted == LocationPermission.always || _permissionGranted == LocationPermission.whileInUse) {
-        currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: desiredAccuracy ?? LocationAccuracy.best);
+      if (_permissionGranted == LocationPermission.always ||
+          _permissionGranted == LocationPermission.whileInUse) {
+        currentPosition = await Geolocator.getCurrentPosition(
+            locationSettings: desiredAccuracy != null
+                ? LocationSettings(accuracy: desiredAccuracy!)
+                : LocationSettings(accuracy: LocationAccuracy.best));
       } else {
         currentPosition = null;
       }
